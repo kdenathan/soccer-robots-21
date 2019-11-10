@@ -289,6 +289,7 @@ void loop() {
           wheelsDefault();
           delay(timeDriven);
           wheelsOFF();
+          delay(5000);
         }
         
       }
