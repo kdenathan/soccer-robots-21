@@ -24,8 +24,7 @@ Pixy2 pixy;
 
 //Defence/Offence switch
 int defoff = 3;
-
-
+long timeDriven = 0;
 
 
 //Globals
@@ -255,6 +254,7 @@ void loop() {
   if (ballFound == false) {
     spinAroundCW(); //run find ball routine
     moving = false; //tell system it isn't moving
+    timeDriven = 0;
   }
   if (ballFound == true) { 
     int bearing = ballBearing();
@@ -278,11 +278,17 @@ void loop() {
     if (bearing >= 148 && bearing <= 168) { //if centred move forward and begin checking distance of ball
       wheelsDefault(); //move ball forward
       moving = true; //tell system it is moving
+      timeDriven ++;
       int distance = ballDistance;
       if (distance >= 253) { //if ball comes close enough kick it
         pistonActivate();
         if (digitalRead(defoff) == LOW) { //check if in defence or offence mode
-          //**NEED ROUTINE FOR ROBOT TO RETURN TO POSITION**
+          //This part is a lil dodgy
+          turnCW();
+          delay(300); //**NEEDS TO BE TURNED TO HOW LONG IT WILL TAKE TO TURN HALF CIRCLE
+          wheelsDefault();
+          delay(timeDriven);
+          wheelsOFF();
         }
         
       }
