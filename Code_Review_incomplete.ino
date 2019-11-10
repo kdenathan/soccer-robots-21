@@ -30,7 +30,7 @@ int defoff = 3;
 
 //Globals
 //==============================================================
-
+bool moving = false; //indicator for if the robot is currently moving
 
 //Initialisation
 //==============================================================
@@ -122,7 +122,7 @@ int ballDistance() {
 
   //Determine where ball is on y-axis
   for (int i=0; i < pixy.ccc.numBlocks; i++) {
-    distance = pixy.ccc.blocks[i].width;
+    distance = pixy.ccc.blocks[i].m_width;
     return distance;
   }
 }
@@ -204,7 +204,7 @@ void inchLEFT() {
 
 //Inch right
 //=============================================================
-void inchRight() {
+void inchRIGHT() {
   //Reduce power in right wheel
   analogWrite(enA, 200);
   analogWrite(enB, 150);
@@ -252,20 +252,32 @@ void turnACW() {
 void loop() {
   //Check if ball has been detected
   ballFound();
-  if (ballFound == false) { 
+  if (ballFound == false) {
     spinAroundCW(); //run find ball routine
+    moving = false; //tell system it isn't moving
   }
   if (ballFound == true) { 
     int bearing = ballBearing();
     //Centre ball with error of +-10 pixels
     if (bearing < 148) {
-      turnACW();
+      if (moving == false) {
+        turnACW();
+      }
+      else if (moving == true) {
+        inchLEFT();
+      }
     }
-    if (bearing > 168) {
-      turnCW();
+    else if (bearing > 168) {
+      if (moving == false) {
+        turnCW();
+      }
+      else if (moving == true) {
+        inchRIGHT();
+      }
     }
     if (bearing >= 148 && bearing <= 168) { //if centred move forward and begin checking distance of ball
-      wheelsDefault();
+      wheelsDefault(); //move ball forward
+      moving = true; //tell system it is moving
       int distance = ballDistance;
       if (distance >= 253) { //if ball comes close enough kick it
         pistonActivate();
