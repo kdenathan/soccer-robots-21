@@ -147,7 +147,6 @@ void pistonActivate() {
   delay(100);
   //Reset signal
   digitalWrite(pistonFire, LOW);
-
 }
 
 
