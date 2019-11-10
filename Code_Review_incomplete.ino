@@ -17,14 +17,14 @@ int in4 = 6;
 
 //Piston
 int pistonCharge = 2;
-int pistonFire = 4;
+int pistonFire = 3;
 
 //Pixy
 #include <Pixy2.h> //Pixy2 Arduino Library
 Pixy2 pixy;
 
 //Defence/Offence switch
-int defoff = 3;
+int defoff = 4;
 
 //Globals
 //==============================================================
@@ -40,7 +40,7 @@ void setup() {
   Serial.println("Motor controller | 6-10");
   Serial.println("Compass          | A4,A5");
   Serial.println("Piston           | 2,3");
-  Serial.println("Defense/Offence  | 3");
+  Serial.println("Defense/Offence  | 4");
 
   //Initialise pin settings
   //motor strength
