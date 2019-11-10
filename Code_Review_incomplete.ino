@@ -29,7 +29,6 @@ int defoff = 4;
 //Globals
 //==============================================================
 bool moving = false; //indicator for if the robot is currently moving
-long ticksDriven = 0; //how long it's been since the robot has last stopped
 long ticksCharged = 0; //how long the capacitor has been charging
 
 //Initialisation
@@ -129,7 +128,7 @@ int ballDistance() {
   //Get blocks
   pixy.ccc.getBlocks();
 
-  //Determine where ball is on y-axis
+  //Determine how wide block is
   for (int i=0; i < pixy.ccc.numBlocks; i++) {
     distance = pixy.ccc.blocks[i].m_width;
     return distance;
@@ -184,12 +183,25 @@ void wheelsOFF() {
   digitalWrite(in4, LOW);
 }
 
-//Turn wheels on
+//Move forward
 //=============================================================
-void wheelsDefault() {
+void wheelsDEFAULT() {
   //Set motor speeds to medium speed
   analogWrite(enA, 200);
   analogWrite(enB, 200);
+  //Set both wheels to forward
+  digitalWrite(in1, HIGH);
+  digitalWrite(in2, LOW);
+  digitalWrite(in3, HIGH);
+  digitalWrite(in4, LOW);
+}
+
+//Full power forward
+//=============================================================
+void wheelsPOWER() {
+  //Set motor speeds to maximum speed
+  analogWrite(enA, 255);
+  analogWrite(enB, 255);
   //Set both wheels to forward
   digitalWrite(in1, HIGH);
   digitalWrite(in2, LOW);
@@ -263,54 +275,74 @@ void loop() {
   else {
     digitalWrite(pistonCharge, LOW);
   }
-  
-  //Check if ball has been detected
-  ballFound();
-  if (ballFound == false) {
-    spinAroundCW(); //run find ball routine
-    moving = false; //tell system it isn't moving
-    ticksDriven = 0;
-  }
-  else if (ballFound == true) { 
-    int bearing = ballBearing();
-    //Centre ball with error of +-10 pixels
-    if (bearing < 148) {
-      if (moving == false) {
+  int currentMode = digitalRead(defoff);
+  //Defence mode
+  if (currentMode = LOW){
+    //find the ball
+    ballFound();
+    if (ballFound() == false) {
+      spinAroundCW; //find ball routine
+    }
+    else if (ballFound() == true) { //if ball is found
+      int bearing = ballBearing(); //find out where the ball is
+      //keep ball in centre of camera
+      if (bearing < 148) {
         turnACW();
       }
-      else if (moving == true) {
-        inchLEFT();
-      }
-    }
-    else if (bearing > 168) {
-      if (moving == false) {
+      else if (bearing > 168) {
         turnCW();
       }
-      else if (moving == true) {
-        inchRIGHT();
-      }
-    }
-    else if (bearing >= 148 && bearing <= 168) { //if centred move forward and begin checking distance of ball
-      wheelsDefault(); //move ball forward
-      moving = true; //tell system it is moving
-      ticksDriven ++;
-      int distance = ballDistance;
-      if (distance >= 253) { //if ball comes close enough kick it
-        pistonActivate();
-        if (digitalRead(defoff) == LOW) { //check if in defence or offence mode
-          //This part is a lil dodgy
-          turnCW();
-          delay(300); //**NEEDS TO BE TUNED TO HOW LONG IT WILL TAKE TO TURN HALF CIRCLE
-          wheelsDefault();
-          delay(ticksDriven);
+      //wait until ball is 300mm away
+      else if (bearing >= 148 && bearing <= 168) {
+        int distance = ballDistance();
+        if (distance <= 79) { //**NEEDS TO BE TUNED TO 300mm
+          wheelsPOWER(); //charge at the ball
+          delay(300);
+          turnCW(); 
+          delay(500); //**NEEDS TO BE TUNED TO A HALF TURN
+          wheelsDEFAULT();
+          delay(400); //**NEEDS TO BE TUNED TO HOW FAR IT TRAVELLED
           wheelsOFF();
           delay(5000);
         }
-        
       }
-
-      
     }
   }
-
+  //Offence mode
+  else if (currentMode = HIGH) { 
+    //Check if ball has been detected
+    ballFound();
+    if (ballFound() == false) {
+      spinAroundCW(); //run find ball routine
+      moving = false; //tell system it isn't currently moving
+    }
+    else if (ballFound == true) { 
+      int bearing = ballBearing();
+      //Centre ball with error of +-10 pixels
+      if (bearing < 148) {
+        if (moving == false) {
+          turnACW();
+        }
+        else if (moving == true) {
+          inchLEFT();
+        }
+      }
+      else if (bearing > 168) {
+        if (moving == false) {
+          turnCW();
+        }
+        else if (moving == true) {
+          inchRIGHT();
+        }
+      }
+      else if (bearing >= 148 && bearing <= 168) { //if centred move forward and begin checking distance of ball
+        wheelsDEFAULT(); //move ball forward
+        moving = true; //tell system it is currently moving
+        int distance = ballDistance;
+        if (distance >= 253) { //if ball comes close enough kick it
+          pistonActivate();        
+        }
+      }
+    }
+  }
 }
