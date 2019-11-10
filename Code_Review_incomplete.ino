@@ -29,8 +29,8 @@ int defoff = 3;
 //Globals
 //==============================================================
 bool moving = false; //indicator for if the robot is currently moving
-long timeDriven = 0;
-long timeCharged = 0;
+long ticksDriven = 0; //how long it's been since the robot has last stopped
+long ticksCharged = 0; //how long the capacitor has been charging
 
 //Initialisation
 //==============================================================
@@ -59,7 +59,6 @@ void setup() {
   digitalWrite(in3, LOW);
   digitalWrite(in4, LOW);
   
-
   //Verify initialisation of Pixy
   Serial.println("Initialising Pixy...");
   pixy.init();
@@ -144,6 +143,7 @@ void pistonActivate() {
   digitalWrite(pistonCharge, LOW);
   //Fire
   digitalWrite(pistonFire, HIGH);
+  ticksCharged = 0;
   //Wait 0.1 sec
   delay(100);
   //Reset signal
@@ -169,7 +169,6 @@ void spinAroundCW() {
   //Set backward for motor B
   digitalWrite(in3, LOW);
   digitalWrite(in4, HIGH);
-  delay(200);
 }
 
 //Turn wheels off
@@ -183,7 +182,6 @@ void wheelsOFF() {
   digitalWrite(in2, LOW);
   digitalWrite(in3, LOW);
   digitalWrite(in4, LOW);
-  delay(200);
 }
 
 //Turn wheels on
@@ -197,7 +195,6 @@ void wheelsDefault() {
   digitalWrite(in2, LOW);
   digitalWrite(in3, HIGH);
   digitalWrite(in4, LOW);
-  delay(200);
 }
 
 //Inch left
@@ -211,7 +208,6 @@ void inchLEFT() {
   digitalWrite(in2, LOW);
   digitalWrite(in3, HIGH);
   digitalWrite(in4, LOW);
-  delay(200);
 }
 
 //Inch right
@@ -225,7 +221,6 @@ void inchRIGHT() {
   digitalWrite(in2, LOW);
   digitalWrite(in3, HIGH);
   digitalWrite(in4, LOW);  
-  delay(200);
 }
 
 //Turn CW **needs engine power tuning**
@@ -240,7 +235,6 @@ void turnCW() {
   //Forward power in left wheel
   digitalWrite(in1, HIGH);
   digitalWrite(in2, LOW);
-  delay(200);
 }
 
 //Turn ACW **needs engine power tuning**
@@ -255,7 +249,6 @@ void turnACW() {
   //Forward power in right wheel
   digitalWrite(in3, HIGH);
   digitalWrite(in4, LOW);
-  delay(200);   
 }
 
 
@@ -263,9 +256,9 @@ void turnACW() {
 //=============================================================
 void loop() {
   //Begin charging capacitor unless charged
-  if (timeCharged <= 9000) {
+  if (ticksCharged <= 4500) {
     digitalWrite(pistonCharge, HIGH);
-    timeCharged ++;
+    ticksCharged ++;
   }
   else {
     digitalWrite(pistonCharge, LOW);
@@ -276,9 +269,9 @@ void loop() {
   if (ballFound == false) {
     spinAroundCW(); //run find ball routine
     moving = false; //tell system it isn't moving
-    timeDriven = 0;
+    ticksDriven = 0;
   }
-  if (ballFound == true) { 
+  else if (ballFound == true) { 
     int bearing = ballBearing();
     //Centre ball with error of +-10 pixels
     if (bearing < 148) {
@@ -297,20 +290,19 @@ void loop() {
         inchRIGHT();
       }
     }
-    if (bearing >= 148 && bearing <= 168) { //if centred move forward and begin checking distance of ball
+    else if (bearing >= 148 && bearing <= 168) { //if centred move forward and begin checking distance of ball
       wheelsDefault(); //move ball forward
       moving = true; //tell system it is moving
-      timeDriven ++;
+      ticksDriven ++;
       int distance = ballDistance;
       if (distance >= 253) { //if ball comes close enough kick it
         pistonActivate();
-        timeCharged = 0;
         if (digitalRead(defoff) == LOW) { //check if in defence or offence mode
           //This part is a lil dodgy
           turnCW();
           delay(300); //**NEEDS TO BE TURNED TO HOW LONG IT WILL TAKE TO TURN HALF CIRCLE
           wheelsDefault();
-          delay(timeDriven);
+          delay(ticksDriven);
           wheelsOFF();
           delay(5000);
         }
