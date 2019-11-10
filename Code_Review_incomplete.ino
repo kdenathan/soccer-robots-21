@@ -72,8 +72,8 @@ void setup() {
 
   //Initialise defence/offense signal pin
   pinMode(defoff, INPUT); //HIGH = offence LOW = defence
-
 }
+
 //Is the ball on screen?
 //=============================================================
 bool ballFound() {
@@ -149,11 +149,9 @@ void pistonActivate() {
   digitalWrite(pistonFire, LOW);
 }
 
-
 //=============================================================
 //WHEEL POWER PROFILES
 //=============================================================
-
 
 //Spin clockwise
 //=============================================================
@@ -261,7 +259,6 @@ void turnACW() {
   digitalWrite(in3, HIGH);
   digitalWrite(in4, LOW);
 }
-
 
 //Main Loop
 //=============================================================
