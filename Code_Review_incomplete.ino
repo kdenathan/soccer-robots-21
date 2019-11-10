@@ -300,7 +300,7 @@ void loop() {
         if (digitalRead(defoff) == LOW) { //check if in defence or offence mode
           //This part is a lil dodgy
           turnCW();
-          delay(300); //**NEEDS TO BE TURNED TO HOW LONG IT WILL TAKE TO TURN HALF CIRCLE
+          delay(300); //**NEEDS TO BE TUNED TO HOW LONG IT WILL TAKE TO TURN HALF CIRCLE
           wheelsDefault();
           delay(ticksDriven);
           wheelsOFF();
