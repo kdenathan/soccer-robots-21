@@ -16,7 +16,8 @@ int in3 = 7;
 int in4 = 6;
 
 //Piston
-int pistonPin = 2;
+int pistonCharge = 2;
+int pistonFire = 4;
 
 //Pixy
 #include <Pixy2.h> //Pixy2 Arduino Library
@@ -24,12 +25,12 @@ Pixy2 pixy;
 
 //Defence/Offence switch
 int defoff = 3;
-long timeDriven = 0;
-
 
 //Globals
 //==============================================================
 bool moving = false; //indicator for if the robot is currently moving
+long timeDriven = 0;
+long timeCharged = 0;
 
 //Initialisation
 //==============================================================
@@ -38,7 +39,7 @@ void setup() {
   //Print pin locations into serial monitor
   Serial.println("Motor controller | 6-10");
   Serial.println("Compass          | A4,A5");
-  Serial.println("Piston           | 2");
+  Serial.println("Piston           | 2,3");
   Serial.println("Defense/Offence  | 3");
 
   //Initialise pin settings
@@ -50,16 +51,26 @@ void setup() {
   pinMode(in2, OUTPUT);
   pinMode(in3, OUTPUT);
   pinMode(in4, OUTPUT);
+  //Set startup defaults
+  analogWrite(enA, 0);
+  analogWrite(enB, 0);
+  digitalWrite(in1, LOW);
+  digitalWrite(in2, LOW);
+  digitalWrite(in3, LOW);
+  digitalWrite(in4, LOW);
+  
 
   //Verify initialisation of Pixy
   Serial.println("Initialising Pixy...");
   pixy.init();
   Serial.println("Camera Initialised.");
 
-  //Initialise piston activator pin
-  pinMode(pistonActivate, OUTPUT);
-  //set to low
-  digitalWrite(pistonActivate, LOW);
+  //Initialise piston activator pins
+  pinMode(pistonCharge, OUTPUT);
+  pinMode(pistonFire, OUTPUT);
+  //Set default states
+  digitalWrite(pistonCharge, LOW);
+  digitalWrite(pistonFire, LOW);
 
   //Initialise defence/offense signal pin
   pinMode(defoff, INPUT); //HIGH = offence LOW = defence
@@ -129,12 +140,14 @@ int ballDistance() {
 //Piston activate
 //=============================================================
 void pistonActivate() {
-  //Activate Piston
-  digitalWrite(pistonPin, HIGH);
-  //Wait 0.5 sec
-  delay(500);
+  //Cut off charging
+  digitalWrite(pistonCharge, LOW);
+  //Fire
+  digitalWrite(pistonFire, HIGH);
+  //Wait 0.1 sec
+  delay(100);
   //Reset signal
-  digitalWrite(pistonPin, LOW);
+  digitalWrite(pistonFire, LOW);
 
 }
 
@@ -249,6 +262,15 @@ void turnACW() {
 //Main Loop
 //=============================================================
 void loop() {
+  //Begin charging capacitor unless charged
+  if (timeCharged <= 9000) {
+    digitalWrite(pistonCharge, HIGH);
+    timeCharged ++;
+  }
+  else {
+    digitalWrite(pistonCharge, LOW);
+  }
+  
   //Check if ball has been detected
   ballFound();
   if (ballFound == false) {
@@ -282,6 +304,7 @@ void loop() {
       int distance = ballDistance;
       if (distance >= 253) { //if ball comes close enough kick it
         pistonActivate();
+        timeCharged = 0;
         if (digitalRead(defoff) == LOW) { //check if in defence or offence mode
           //This part is a lil dodgy
           turnCW();
