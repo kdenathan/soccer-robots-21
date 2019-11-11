@@ -29,7 +29,6 @@ int defoff = 4;
 //Globals
 //==============================================================
 bool moving = false; //indicator for if the robot is currently moving
-long ticksCharged = 0; //how long the capacitor has been charging
 
 //Initialisation
 //==============================================================
@@ -78,10 +77,8 @@ void setup() {
 //=============================================================
 bool ballFound() {
   //Locals
-  float area = 0;
-  int maxArea = 0;
   bool result = false;
-  int ballArea = 0;
+
 
   //Scan for signature blocks
   pixy.ccc.getBlocks();
@@ -117,7 +114,7 @@ int ballBearing() {
 //=============================================================
 int ballDistance() {
   //Locals
-  int distance = 0;
+  int distance = 1;
 
   //Get blocks
   pixy.ccc.getBlocks();
@@ -138,7 +135,6 @@ void pistonActivate() {
   delay(50);
   //Fire
   digitalWrite(pistonFire, HIGH);
-  ticksCharged = 0;
   //Wait 0.1 sec
   delay(50);
   //Reset signal
@@ -332,9 +328,9 @@ void loop() {
       else if (bearing >= 148 && bearing <= 168) { //if centred move forward and begin checking distance of ball
         wheelsDEFAULT(); //move ball forward
         moving = true; //tell system it is currently moving
-        int distance = ballDistance;
+        int distance = ballDistance();
         Serial.println(distance);
-        if (distance >= 10) { //if ball comes close enough kick it **NEEDS TO BE TUNED**
+        if (distance >= 50) { //if ball comes close enough kick it **NEEDS TO BE TUNED**
           pistonActivate();        
         }
       }
