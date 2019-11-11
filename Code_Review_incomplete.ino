@@ -72,8 +72,8 @@ void setup() {
 
   //Initialise defence/offense signal pin
   pinMode(defoff, INPUT); //HIGH = offence LOW = defence
-}
 
+}
 //Is the ball on screen?
 //=============================================================
 bool ballFound() {
@@ -140,18 +140,23 @@ int ballDistance() {
 void pistonActivate() {
   //Cut off charging
   digitalWrite(pistonCharge, LOW);
+  delay(50);
   //Fire
   digitalWrite(pistonFire, HIGH);
   ticksCharged = 0;
   //Wait 0.1 sec
-  delay(100);
+  delay(50);
   //Reset signal
   digitalWrite(pistonFire, LOW);
+  digitalWrite(pistonCharge, HIGH);
+
 }
+
 
 //=============================================================
 //WHEEL POWER PROFILES
 //=============================================================
+
 
 //Spin clockwise
 //=============================================================
@@ -260,17 +265,13 @@ void turnACW() {
   digitalWrite(in4, LOW);
 }
 
+
 //Main Loop
 //=============================================================
 void loop() {
-  //Begin charging capacitor unless charged
-  if (ticksCharged <= 4500) {
-    digitalWrite(pistonCharge, HIGH);
-    ticksCharged ++;
-  }
-  else {
-    digitalWrite(pistonCharge, LOW);
-  }
+  //Begin charging capacitor
+  digitalWrite(pistonCharge, HIGH);
+  //Check if switch is set to defence or offence  
   int currentMode = digitalRead(defoff);
   //Defence mode
   if (currentMode = LOW){
@@ -335,7 +336,7 @@ void loop() {
         wheelsDEFAULT(); //move ball forward
         moving = true; //tell system it is currently moving
         int distance = ballDistance;
-        if (distance >= 253) { //if ball comes close enough kick it
+        if (distance >= 253) { //if ball comes close enough kick it **NEEDS TO BE TUNED**
           pistonActivate();        
         }
       }
