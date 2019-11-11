@@ -305,8 +305,7 @@ void loop() {
       spinAroundCW(); //run find ball routine
       moving = false; //tell system it isn't currently moving
     }
-    else if (ballFound != false) {
-      Serial.println("found"); 
+    else if (ballFound != false) { 
       int bearing = ballBearing();
       //Centre ball with error of +-10 pixels
       if (bearing < 148) {
@@ -329,7 +328,6 @@ void loop() {
         wheelsDEFAULT(); //move ball forward
         moving = true; //tell system it is currently moving
         int distance = ballDistance();
-        Serial.println(distance);
         if (distance >= 50) { //if ball comes close enough kick it **NEEDS TO BE TUNED**
           pistonActivate();        
         }
