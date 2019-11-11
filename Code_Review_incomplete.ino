@@ -29,6 +29,7 @@ int defoff = 4;
 //Globals
 //==============================================================
 bool moving = false; //indicator for if the robot is currently moving
+long ticksSinceFired = 0; //time since fired
 
 //Initialisation
 //==============================================================
@@ -135,6 +136,7 @@ void pistonActivate() {
   delay(50);
   //Fire
   digitalWrite(pistonFire, HIGH);
+  ticksSinceFired = 0;
   //Wait 0.1 sec
   delay(50);
   //Reset signal
@@ -261,6 +263,7 @@ void turnACW() {
 //=============================================================
 void loop() {
   //Begin charging capacitor
+  ticksSinceFired++; //start counting how long its been since firing
   digitalWrite(pistonCharge, HIGH);
   //Check if switch is set to defence or offence  
   int currentMode = digitalRead(defoff);
@@ -305,7 +308,7 @@ void loop() {
       spinAroundCW(); //run find ball routine
       moving = false; //tell system it isn't currently moving
     }
-    else if (ballFound != false) { 
+    else if (ballFound != false) {
       int bearing = ballBearing();
       //Centre ball with error of +-10 pixels
       if (bearing < 148) {
@@ -328,7 +331,7 @@ void loop() {
         wheelsDEFAULT(); //move ball forward
         moving = true; //tell system it is currently moving
         int distance = ballDistance();
-        if (distance >= 50) { //if ball comes close enough kick it **NEEDS TO BE TUNED**
+        if (distance >= 50 && ticksSinceFired > 40) { //if ball comes close enough kick it and capacitor is charged **NEEDS TO BE TUNED**
           pistonActivate();        
         }
       }
