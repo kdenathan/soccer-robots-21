@@ -67,7 +67,7 @@ void setup() {
   pinMode(pistonCharge, OUTPUT);
   pinMode(pistonFire, OUTPUT);
   //Set default states
-  digitalWrite(pistonCharge, LOW);
+  digitalWrite(pistonCharge, HIGH);
   digitalWrite(pistonFire, LOW);
 
   //Initialise defence/offense signal pin
@@ -90,17 +90,11 @@ bool ballFound() {
   for (int i = 0; i < pixy.ccc.numBlocks; i++) {
     //Is it the ball
     if (pixy.ccc.blocks[i].m_signature == 1) {
-      area = pixy.ccc.blocks[i].m_width * pixy.ccc.blocks[i].m_height;
-    
-      //Is it the biggest block
-       if ((area > 400) && (area > maxArea)) {
-         maxArea = area;
-         ballArea = area;
-         result = true;
+      result = true;
       }
     }
-    return result;
-  }
+    
+  return result;
 }
 
 //Ball location by bearing [0,316]
@@ -114,9 +108,9 @@ int ballBearing() {
 
   //Determine where the ball in on the x-axis
   for (int i = 0; i < pixy.ccc.numBlocks; i++) {
-    bearing = pixy.ccc.blocks[i].m_x;
-    return bearing;
+    bearing = pixy.ccc.blocks[i].m_x; 
   }
+  return bearing;
 }
 
 //Ball distance judged by width of detected block [0,316]
@@ -131,8 +125,9 @@ int ballDistance() {
   //Determine how wide block is
   for (int i=0; i < pixy.ccc.numBlocks; i++) {
     distance = pixy.ccc.blocks[i].m_width;
-    return distance;
+    
   }
+  return distance;
 }
 
 //Piston activate
@@ -306,14 +301,16 @@ void loop() {
     }
   }
   //Offence mode
-  else if (currentMode = HIGH) { 
+  else if (currentMode = HIGH) {
+     
     //Check if ball has been detected
     ballFound();
     if (ballFound() == false) {
       spinAroundCW(); //run find ball routine
       moving = false; //tell system it isn't currently moving
     }
-    else if (ballFound == true) { 
+    else if (ballFound != false) {
+      Serial.println("found"); 
       int bearing = ballBearing();
       //Centre ball with error of +-10 pixels
       if (bearing < 148) {
@@ -336,7 +333,8 @@ void loop() {
         wheelsDEFAULT(); //move ball forward
         moving = true; //tell system it is currently moving
         int distance = ballDistance;
-        if (distance >= 253) { //if ball comes close enough kick it **NEEDS TO BE TUNED**
+        Serial.println(distance);
+        if (distance >= 10) { //if ball comes close enough kick it **NEEDS TO BE TUNED**
           pistonActivate();        
         }
       }
