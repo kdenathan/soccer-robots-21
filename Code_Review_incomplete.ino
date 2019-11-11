@@ -308,7 +308,7 @@ void loop() {
       spinAroundCW(); //run find ball routine
       moving = false; //tell system it isn't currently moving
     }
-    else if (ballFound != false) {
+    else if (ballFound() != false) {
       int bearing = ballBearing();
       //Centre ball with error of +-10 pixels
       if (bearing < 148) {
