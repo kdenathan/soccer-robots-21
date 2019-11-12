@@ -337,7 +337,7 @@ void loop() {
           delay(300);
           
           //Reverse back into position and stop
-          wheelsREVERSE;
+          wheelsREVERSE();
           delay(300); 
           wheelsOFF();
           
