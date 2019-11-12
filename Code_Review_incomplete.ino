@@ -79,20 +79,22 @@ void setup() {
 bool ballFound() {
   //Locals
   bool result = false;
-
-
+  
   //Scan for signature blocks
   pixy.ccc.getBlocks();
-
+  
   //Enumerate any blocks
   for (int i = 0; i < pixy.ccc.numBlocks; i++) {
+    
     //Is it the ball
     if (pixy.ccc.blocks[i].m_signature == 1) {
       result = true;
+      
       }
-    }
     
+    }
   return result;
+  
 }
 
 //Ball location by bearing [0,316]
@@ -107,8 +109,10 @@ int ballBearing() {
   //Determine where the ball in on the x-axis
   for (int i = 0; i < pixy.ccc.numBlocks; i++) {
     bearing = pixy.ccc.blocks[i].m_x; 
+    
   }
   return bearing;
+  
 }
 
 //Ball distance judged by width of detected block [0,316]
@@ -123,9 +127,10 @@ int ballDistance() {
   //Determine how wide block is
   for (int i=0; i < pixy.ccc.numBlocks; i++) {
     distance = pixy.ccc.blocks[i].m_width;
-    
   }
+  
   return distance;
+  
 }
 
 //Piston activate
@@ -134,15 +139,18 @@ void pistonActivate() {
   //Cut off charging
   digitalWrite(pistonCharge, LOW);
   delay(50);
+  
   //Fire
   digitalWrite(pistonFire, HIGH);
   ticksSinceFired = 0;
+  
   //Wait 0.1 sec
   delay(50);
+  
   //Reset signal
   digitalWrite(pistonFire, LOW);
   digitalWrite(pistonCharge, HIGH);
-
+  
 }
 
 
@@ -155,14 +163,17 @@ void pistonActivate() {
 //=============================================================
 void spinAroundCW() {
   //Set slower speed for both motors so ball isn't blurry
-  analogWrite(enA, 50);
-  analogWrite(enB, 50);
+  analogWrite(enA, 75);
+  analogWrite(enB, 75);
+  
   //Set forward for motor A
   digitalWrite(in1, HIGH);
   digitalWrite(in2, LOW);
+  
   //Set backward for motor B
   digitalWrite(in3, LOW);
   digitalWrite(in4, HIGH);
+  
 }
 
 //Turn wheels off
@@ -171,11 +182,13 @@ void wheelsOFF() {
   //Set motor speeds to zero
   analogWrite(enA, 0);
   analogWrite(enB, 0);
+  
   //Set all outputs to LOW
   digitalWrite(in1, LOW);
   digitalWrite(in2, LOW);
   digitalWrite(in3, LOW);
   digitalWrite(in4, LOW);
+  
 }
 
 //Move forward
@@ -184,11 +197,13 @@ void wheelsDEFAULT() {
   //Set motor speeds to medium speed
   analogWrite(enA, 200);
   analogWrite(enB, 200);
+  
   //Set both wheels to forward
   digitalWrite(in1, HIGH);
   digitalWrite(in2, LOW);
   digitalWrite(in3, HIGH);
   digitalWrite(in4, LOW);
+  
 }
 
 //Full power forward
@@ -202,6 +217,7 @@ void wheelsPOWER() {
   digitalWrite(in2, LOW);
   digitalWrite(in3, HIGH);
   digitalWrite(in4, LOW);
+  
 }
 
 //Full power reverse
@@ -215,6 +231,7 @@ void wheelsREVERSE() {
   digitalWrite(in2, HIGH);
   digitalWrite(in3, LOW);
   digitalWrite(in4, HIGH);
+  
 }
 
 //Inch left
@@ -228,6 +245,7 @@ void inchLEFT() {
   digitalWrite(in2, LOW);
   digitalWrite(in3, HIGH);
   digitalWrite(in4, LOW);
+  
 }
 
 //Inch right
@@ -241,6 +259,7 @@ void inchRIGHT() {
   digitalWrite(in2, LOW);
   digitalWrite(in3, HIGH);
   digitalWrite(in4, LOW);  
+  
 }
 
 //Turn CW **needs engine power tuning**
@@ -255,6 +274,7 @@ void turnCW() {
   //Forward power in left wheel
   digitalWrite(in1, HIGH);
   digitalWrite(in2, LOW);
+  
 }
 
 //Turn ACW **needs engine power tuning**
@@ -269,6 +289,7 @@ void turnACW() {
   //Forward power in right wheel
   digitalWrite(in3, HIGH);
   digitalWrite(in4, LOW);
+  
 }
 
 
@@ -278,36 +299,53 @@ void loop() {
   //Begin charging capacitor
   ticksSinceFired++; //start counting how long its been since firing
   digitalWrite(pistonCharge, HIGH);
+  
   //Check if switch is set to defence or offence  
   int currentMode = digitalRead(defoff);
+  
   //Defence mode
   if (currentMode = LOW){
-    //find the ball
+    
+    //Check if ball is found
     ballFound();
-    if (ballFound() == false) {
-      spinAroundCW; //find ball routine
+    if (ballFound() == false) { //if ball is not found
+      //Run find ball routine
+      spinAroundCW;
+      
     }
-    else if (ballFound() == true) { //if ball is found
-      int bearing = ballBearing(); //find out where the ball is
-      //keep ball in centre of camera
+    else { //if ball is found
+      
+      //Find out where the ball is
+      int bearing = ballBearing();
+      
+      //Keep ball in centre of camera
       if (bearing < 148) {
         turnACW();
+        
       }
       else if (bearing > 168) {
         turnCW();
+        
       }
-      //wait until ball is 300mm away
+      //If centred wait until ball is within 300mm
       else if (bearing >= 148 && bearing <= 168) {
         int distance = ballDistance();
         if (distance <= 79) { //**NEEDS TO BE TUNED TO 300mm
-          wheelsPOWER(); //charge at the ball
+          
+          //Charge at the ball when in range
+          wheelsPOWER();
           delay(300);
-          wheelsREVERSE; //reverse back to original position and stop
+          
+          //Reverse back into position and stop
+          wheelsREVERSE;
           delay(300); 
           wheelsOFF();
-          delay(1000); //Wait 1 second and then resume ball search
-        }
-      }
+          
+          //Wait 1 second and then resume ball search
+          delay(1000);
+          
+        } 
+      } 
     }
   }
   //Offence mode
@@ -315,35 +353,45 @@ void loop() {
      
     //Check if ball has been detected
     ballFound();
-    if (ballFound() == false) {
-      spinAroundCW(); //run find ball routine
+    if (ballFound() == false) { //if ball is not found
+      //Run found ball routine
+      spinAroundCW();
       moving = false; //tell system it isn't currently moving
+      
     }
-    else if (ballFound() != false) {
-      int bearing = ballBearing();
+    else { //if is found
       //Centre ball with error of +-10 pixels
+      int bearing = ballBearing();
       if (bearing < 148) {
         if (moving == false) {
           turnACW();
+          
         }
-        else if (moving == true) {
-          inchLEFT();
+        else {
+          inchLEFT(); //makes slight turn instead of stopping and turning if moving
+          
         }
       }
       else if (bearing > 168) {
         if (moving == false) {
           turnCW();
+          
         }
-        else if (moving == true) {
-          inchRIGHT();
+        else {
+          inchRIGHT(); //makes slight turn instead of stopping and turning if moving
+          
         }
       }
-      else if (bearing >= 148 && bearing <= 168) { //if centred move forward and begin checking distance of ball
-        wheelsDEFAULT(); //move ball forward
+      //If centred move forward
+      else if (bearing >= 148 && bearing <= 168) {
+        wheelsDEFAULT(); //move toward ball
         moving = true; //tell system it is currently moving
-        int distance = ballDistance();
-        if (distance >= 50 && ticksSinceFired > 40) { //if ball comes close enough kick it and capacitor is charged **NEEDS TO BE TUNED**
-          pistonActivate();        
+        
+        //If ball comes close enough and capacitor is charged enough kick it
+        int distance = ballDistance(); //check distance of ball
+        if (distance >= 50 && ticksSinceFired > 40) { //**NEEDS TO BE TUNED**
+          pistonActivate();
+          
         }
       }
     }
