@@ -204,6 +204,19 @@ void wheelsPOWER() {
   digitalWrite(in4, LOW);
 }
 
+//Full power reverse
+//=============================================================
+void wheelsREVERSE() {
+  //Set motor speeds to maximum speed
+  analogWrite(enA, 255);
+  analogWrite(enB, 255);
+  //Set both wheels to backward
+  digitalWrite(in1, LOW);
+  digitalWrite(in2, HIGH);
+  digitalWrite(in3, LOW);
+  digitalWrite(in4, HIGH);
+}
+
 //Inch left
 //=============================================================
 void inchLEFT() {
@@ -289,12 +302,10 @@ void loop() {
         if (distance <= 79) { //**NEEDS TO BE TUNED TO 300mm
           wheelsPOWER(); //charge at the ball
           delay(300);
-          turnCW(); 
-          delay(500); //**NEEDS TO BE TUNED TO A HALF TURN
-          wheelsDEFAULT();
-          delay(400); //**NEEDS TO BE TUNED TO HOW FAR IT TRAVELLED
+          wheelsREVERSE; //reverse back to original position and stop
+          delay(300); 
           wheelsOFF();
-          delay(5000);
+          delay(1000); //Wait 1 second and then resume ball search
         }
       }
     }
