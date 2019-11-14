@@ -149,7 +149,10 @@ int ballDistance() {
 
   //Determine how wide block is
   for (int i=0; i < pixy.ccc.numBlocks; i++) {
-    distance = pixy.ccc.blocks[i].m_width;
+    if (pixy.ccc.blocks[i].m_signature == ballSig) {
+      distance = pixy.ccc.blocks[i].m_width;
+    }
+    
   }
   
   return distance;
