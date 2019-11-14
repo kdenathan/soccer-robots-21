@@ -26,6 +26,10 @@ Pixy2 pixy;
 //Defence/Offence switch
 int defoff = 4;
 
+//Pixy Signatures
+int ballSig = 1; //signature number of the ball
+int goalSig = 2; //signature number of the goal
+
 //Globals
 //==============================================================
 bool moving = false; //indicator for if the robot is currently moving
@@ -87,15 +91,33 @@ bool ballFound() {
   for (int i = 0; i < pixy.ccc.numBlocks; i++) {
     
     //Is it the ball
-    if (pixy.ccc.blocks[i].m_signature == 1) {
+    if (pixy.ccc.blocks[i].m_signature == ballSig) {
       result = true;
       
       }
-    
     }
   return result;
   
 }
+
+//Location of goal posts
+//=============================================================
+int goalBearing() {
+    //Locals
+  int bearing = 0;
+
+  //Get blocks
+  pixy.ccc.getBlocks();
+
+  //Determine where the ball in on the x-axis
+  for (int i = 0; i < pixy.ccc.numBlocks; i++) {
+    if (pixy.ccc.blocks[i].m_signature == goalSig) {
+      bearing = pixy.ccc.blocks[i].m_x; 
+    }
+  }
+  return bearing;
+}
+
 
 //Ball location by bearing [0,316]
 //=============================================================
@@ -108,8 +130,9 @@ int ballBearing() {
 
   //Determine where the ball in on the x-axis
   for (int i = 0; i < pixy.ccc.numBlocks; i++) {
-    bearing = pixy.ccc.blocks[i].m_x; 
-    
+    if (pixy.ccc.blocks[i].m_signature == ballSig) {
+      bearing = pixy.ccc.blocks[i].m_x; 
+    }
   }
   return bearing;
   
