@@ -7,17 +7,17 @@
 
 //L298N Motor Controller
 //Motor one
-int enA = 10;
-int in1 = 8;
-int in2 = 9;
+int enA = 5;
+int in1 = 6;
+int in2 = 7;
 //Motor two
-int enB = 5;
-int in3 = 7;
-int in4 = 6;
+int enB = 10;
+int in3 = 8;
+int in4 = 9;
 
 //Piston
-int pistonCharge = 2;
-int pistonFire = 3;
+int pistonCharge = 3;
+int pistonFire = 2;
 
 //Pixy
 #include <Pixy2.h> //Pixy2 Arduino Library
