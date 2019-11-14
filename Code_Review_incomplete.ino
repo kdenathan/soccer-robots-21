@@ -34,6 +34,7 @@ int goalSig = 2; //signature number of the goal
 //==============================================================
 bool moving = false; //indicator for if the robot is currently moving
 long ticksSinceFired = 0; //time since fired
+bool ballCaught = false;
 
 //Initialisation
 //==============================================================
@@ -118,6 +119,23 @@ int goalBearing() {
   return bearing;
 }
 
+//Centre goal
+//=============================================================
+int goalbearing() {
+    //Locals
+  int bearing = 0;
+
+  //Get blocks
+  pixy.ccc.getBlocks();
+
+  //Determine where the ball in on the x-axis
+  for (int i = 0; i < pixy.ccc.numBlocks; i++) {
+    if (pixy.ccc.blocks[i].m_signature == goalSig) {
+      bearing = pixy.ccc.blocks[i].m_x; 
+    }
+  }
+  return bearing;
+}
 
 //Ball location by bearing [0,316]
 //=============================================================
@@ -387,8 +405,8 @@ void loop() {
     }
     else { //if is found
       //Centre ball with error of +-10 pixels
-      int bearing = ballBearing();
-      if (bearing < 148) {
+      int bearing = goalbearing();
+      if (bearing < 148 && ballCaught == false) {
         if (moving == false) {
           turnACW();
           
@@ -398,7 +416,7 @@ void loop() {
           
         }
       }
-      else if (bearing > 168) {
+      else if (bearing > 168 && ballCaught ==false) {
         if (moving == false) {
           turnCW();
           
@@ -409,17 +427,33 @@ void loop() {
         }
       }
       //If centred move forward
-      else if (bearing >= 148 && bearing <= 168) {
+      else if (bearing >= 148 && bearing <= 168 && ballCaught==false) {
         wheelsDEFAULT(); //move toward ball
         moving = true; //tell system it is currently moving
-        
-        //If ball comes close enough and capacitor is charged enough kick it
-        int distance = ballDistance(); //check distance of ball
-        if (distance >= 50 && ticksSinceFired > 40) { //**NEEDS TO BE TUNED**
-          pistonActivate();
+
+     
+            }
+            
+      int distance = ballDistance(); //check distance of ball
+      if (distance<20) {
+          ballCaught=true;
+          
+          int bearingGoal = goalbearing();
+            if (bearingGoal>=148 && bearingGoal <=168) { //TUNE distance
+              pistonActivate();
+              ballCaught=false;
+
+              delay(1000);
+            }
+            else if (bearingGoal>168) {
+              turnCW();
+            }
+            else if (bearingGoal<148) {
+              turnACW();
+          }
           
         }
       }
     }
-  }
+
 }
