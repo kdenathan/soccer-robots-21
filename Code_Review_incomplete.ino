@@ -403,9 +403,10 @@ void loop() {
       moving = false; //tell system it isn't currently moving
       
     }
-    else { //if is found
+    else { //if ball is found
+      
       //Centre ball with error of +-10 pixels
-      int bearing = goalbearing();
+      int bearing = ballBearing();
       if (bearing < 148 && ballCaught == false) {
         if (moving == false) {
           turnACW();
@@ -416,7 +417,7 @@ void loop() {
           
         }
       }
-      else if (bearing > 168 && ballCaught ==false) {
+      else if (bearing > 168 && ballCaught == false) {
         if (moving == false) {
           turnCW();
           
@@ -426,34 +427,38 @@ void loop() {
           
         }
       }
+      
       //If centred move forward
-      else if (bearing >= 148 && bearing <= 168 && ballCaught==false) {
+      else if (bearing >= 148 && bearing <= 168 && ballCaught == false) {
         wheelsDEFAULT(); //move toward ball
         moving = true; //tell system it is currently moving
 
-     
+            }
+      int distance = ballDistance(); //check distance of ball
+      
+      //If ball is close enough
+      if (distance < 20) {
+          ballCaught = true; //tell system that ball is caught
+          int bearingGoal = goalbearing(); //begin checking for location of goal
+
+          //If ball is centred activate piston
+            if (bearingGoal >= 148 && bearingGoal <= 168) { //**EXACT PARAMETER NEEDS TO BE TUNED**
+              pistonActivate();
+              ballCaught = false;
+              delay(1000);
+              
             }
             
-      int distance = ballDistance(); //check distance of ball
-      if (distance<20) {
-          ballCaught=true;
-          
-          int bearingGoal = goalbearing();
-            if (bearingGoal>=148 && bearingGoal <=168) { //TUNE distance
-              pistonActivate();
-              ballCaught=false;
-
-              delay(1000);
-            }
-            else if (bearingGoal>168) {
+          //If ball is not centred run centring routine
+            else if (bearingGoal > 168) {
               turnCW();
+              
             }
-            else if (bearingGoal<148) {
+            else if (bearingGoal < 148) {
               turnACW();
-          }
-          
-        }
+              
+            }        
       }
     }
-
+  }
 }
