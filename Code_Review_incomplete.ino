@@ -438,26 +438,26 @@ void loop() {
       
       //If ball is close enough
       if (distance < 20) {
-          ballCaught = true; //tell system that ball is caught
-          int bearingGoal = goalbearing(); //begin checking for location of goal
+        ballCaught = true; //tell system that ball is caught
+        int bearingGoal = goalbearing(); //begin checking for location of goal
 
-          //If ball is centred activate piston
-            if (bearingGoal >= 148 && bearingGoal <= 168) { //**EXACT PARAMETER NEEDS TO BE TUNED**
-              pistonActivate();
-              ballCaught = false;
-              delay(1000);
+        //If ball is centred activate piston
+        if (bearingGoal >= 148 && bearingGoal <= 168) { //**EXACT PARAMETER NEEDS TO BE TUNED**
+          pistonActivate();
+          ballCaught = false;
+          delay(1000);
               
-            }
+        }
             
           //If ball is not centred run centring routine
-            else if (bearingGoal > 168) {
-              turnCW();
+        else if (bearingGoal > 168) {
+          turnCW();
               
-            }
-            else if (bearingGoal < 148) {
-              turnACW();
+          }
+        else if (bearingGoal < 148) {
+          turnACW();
               
-            }        
+        }        
       }
     }
   }
