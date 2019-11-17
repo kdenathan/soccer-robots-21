@@ -207,16 +207,33 @@ void pistonActivate() {
 //=============================================================
 void spinAroundCW() {
   //Set slower speed for both motors so ball isn't blurry
-  analogWrite(enA, 75);
-  analogWrite(enB, 75);
+  analogWrite(enA, 65);
+  analogWrite(enB, 65);
+  
+  //Set forward for motor A
+  digitalWrite(in1, LOW);
+  digitalWrite(in2, HIGH);
+  
+  //Set backward for motor B
+  digitalWrite(in3, LOW);
+  digitalWrite(in4, HIGH);
+  
+}
+
+//Spin anticlockwise
+//=============================================================
+void spinAroundACW() {
+  //Set slower speed for both motors so ball isn't blurry
+  analogWrite(enA, 50);
+  analogWrite(enB, 50);
   
   //Set forward for motor A
   digitalWrite(in1, HIGH);
   digitalWrite(in2, LOW);
   
   //Set backward for motor B
-  digitalWrite(in3, LOW);
-  digitalWrite(in4, HIGH);
+  digitalWrite(in3, HIGH);
+  digitalWrite(in4, LOW);
   
 }
 
@@ -239,14 +256,14 @@ void wheelsOFF() {
 //=============================================================
 void wheelsDEFAULT() {
   //Set motor speeds to medium speed
-  analogWrite(enA, 200);
-  analogWrite(enB, 200);
+  analogWrite(enA, 100);
+  analogWrite(enB, 85);
   
   //Set both wheels to forward
   digitalWrite(in1, HIGH);
   digitalWrite(in2, LOW);
-  digitalWrite(in3, HIGH);
-  digitalWrite(in4, LOW);
+  digitalWrite(in3, LOW);
+  digitalWrite(in4, HIGH);
   
 }
 
@@ -254,13 +271,13 @@ void wheelsDEFAULT() {
 //=============================================================
 void wheelsPOWER() {
   //Set motor speeds to maximum speed
-  analogWrite(enA, 255);
-  analogWrite(enB, 255);
+  analogWrite(enA, 200);
+  analogWrite(enB, 175);
   //Set both wheels to forward
   digitalWrite(in1, HIGH);
   digitalWrite(in2, LOW);
-  digitalWrite(in3, HIGH);
-  digitalWrite(in4, LOW);
+  digitalWrite(in3, LOW);
+  digitalWrite(in4, HIGH);
   
 }
 
@@ -268,41 +285,41 @@ void wheelsPOWER() {
 //=============================================================
 void wheelsREVERSE() {
   //Set motor speeds to maximum speed
-  analogWrite(enA, 255);
-  analogWrite(enB, 255);
+  analogWrite(enA, 100);
+  analogWrite(enB, 90);
   //Set both wheels to backward
   digitalWrite(in1, LOW);
   digitalWrite(in2, HIGH);
-  digitalWrite(in3, LOW);
-  digitalWrite(in4, HIGH);
-  
-}
-
-//Inch left
-//=============================================================
-void inchLEFT() {
-  //Reduce power in left wheel
-  analogWrite(enA, 150);
-  analogWrite(enB, 200);
-  //Make sure both wheels are forward
-  digitalWrite(in1, HIGH);
-  digitalWrite(in2, LOW);
   digitalWrite(in3, HIGH);
   digitalWrite(in4, LOW);
   
 }
 
-//Inch right
+//Inch left
 //=============================================================
 void inchRIGHT() {
-  //Reduce power in right wheel
-  analogWrite(enA, 200);
-  analogWrite(enB, 150);
+  //Reduce power in left wheel
+  analogWrite(enA, 100);
+  analogWrite(enB, 100);
   //Make sure both wheels are forward
   digitalWrite(in1, HIGH);
   digitalWrite(in2, LOW);
-  digitalWrite(in3, HIGH);
-  digitalWrite(in4, LOW);  
+  digitalWrite(in3, LOW);
+  digitalWrite(in4, HIGH);
+  
+}
+
+//Inch right
+//=============================================================
+void inchLEFT() {
+  //Reduce power in right wheel
+  analogWrite(enA, 100);
+  analogWrite(enB, 80);
+  //Make sure both wheels are forward
+  digitalWrite(in1, HIGH);
+  digitalWrite(in2, LOW);
+  digitalWrite(in3, LOW);
+  digitalWrite(in4, HIGH);  
   
 }
 
@@ -310,14 +327,14 @@ void inchRIGHT() {
 //=============================================================
 void turnCW() {
   //Ensure power states are equal in both wheels
-  analogWrite(enA, 100);
-  analogWrite(enB, 100);
+  analogWrite(enA, 50);
+  analogWrite(enB, 50);
   //Reverse power in right wheel
   digitalWrite(in3, LOW);
   digitalWrite(in4, HIGH);
   //Forward power in left wheel
-  digitalWrite(in1, HIGH);
-  digitalWrite(in2, LOW);
+  digitalWrite(in1, LOW);
+  digitalWrite(in2, HIGH);
   
 }
 
@@ -325,14 +342,14 @@ void turnCW() {
 //=============================================================
 void turnACW() {
   //Ensure power states are equal in both wheels
-  analogWrite(enA, 100);
-  analogWrite(enB, 100);
+  analogWrite(enA, 50);
+  analogWrite(enB, 50);
   //Reverse power in left wheel
-  digitalWrite(in1, LOW);
-  digitalWrite(in2, HIGH);
+  digitalWrite(in1, HIGH);
+  digitalWrite(in2, LOW);
   //Forward power in right wheel
-  digitalWrite(in3, HIGH);
-  digitalWrite(in4, LOW);
+  digitalWrite(in3, LOW);
+  digitalWrite(in4, HIGH);
   
 }
 
