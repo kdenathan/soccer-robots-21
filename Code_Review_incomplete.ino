@@ -207,8 +207,8 @@ void pistonActivate() {
 //=============================================================
 void spinAroundCW() {
   //Set slower speed for both motors so ball isn't blurry
-  analogWrite(enA, 65);
-  analogWrite(enB, 65);
+  analogWrite(enA, 55);
+  analogWrite(enB, 55);
   
   //Set forward for motor A
   digitalWrite(in1, LOW);
@@ -327,8 +327,8 @@ void inchLEFT() {
 //=============================================================
 void turnCW() {
   //Ensure power states are equal in both wheels
-  analogWrite(enA, 50);
-  analogWrite(enB, 50);
+  analogWrite(enA, 55);
+  analogWrite(enB, 55);
   //Reverse power in right wheel
   digitalWrite(in3, LOW);
   digitalWrite(in4, HIGH);
@@ -342,8 +342,8 @@ void turnCW() {
 //=============================================================
 void turnACW() {
   //Ensure power states are equal in both wheels
-  analogWrite(enA, 50);
-  analogWrite(enB, 50);
+  analogWrite(enA, 55);
+  analogWrite(enB, 55);
   //Reverse power in left wheel
   digitalWrite(in1, HIGH);
   digitalWrite(in2, LOW);
@@ -393,14 +393,18 @@ void loop() {
         int distance = ballDistance();
         if (distance <= 79) { //**NEEDS TO BE TUNED TO 300mm
           
-          //Charge at the ball when in range
+          //Charge at the ball when in range aand return to goal using calibrated algorithm
+          wheelsDEFAULT();
+          delay(70);
           wheelsPOWER();
-          delay(300);
-          
-          //Reverse back into position and stop
           wheelsREVERSE();
-          delay(300); 
+          delay(40);
           wheelsOFF();
+          delay(3000);
+          wheelsREVERSE();
+          delay(1200);
+          wheelsOFF();
+          delay(2000);
           
           //Wait 1 second and then resume ball search
           delay(1000);
