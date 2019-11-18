@@ -299,7 +299,7 @@ void wheelsREVERSE() {
 //=============================================================
 void inchRIGHT() {
   //Reduce power in left wheel
-  analogWrite(enA, 100);
+  analogWrite(enA, 50);
   analogWrite(enB, 100);
   //Make sure both wheels are forward
   digitalWrite(in1, HIGH);
@@ -314,7 +314,7 @@ void inchRIGHT() {
 void inchLEFT() {
   //Reduce power in right wheel
   analogWrite(enA, 100);
-  analogWrite(enB, 80);
+  analogWrite(enB, 50);
   //Make sure both wheels are forward
   digitalWrite(in1, HIGH);
   digitalWrite(in2, LOW);
@@ -425,32 +425,27 @@ void loop() {
       
     }
     else { //if ball is found
+      Serial.println("found");
       
       //Centre ball with error of +-10 pixels
       int bearing = ballBearing();
-      if (bearing < 148 && ballCaught == false) {
-        if (moving == false) {
-          turnACW();
-          
-        }
-        else {
-          inchLEFT(); //makes slight turn instead of stopping and turning if moving
-          
-        }
-      }
-      else if (bearing > 168 && ballCaught == false) {
-        if (moving == false) {
-          turnCW();
-          
-        }
-        else {
+      Serial.println(bearing);
+      if (bearing < 138 && ballCaught == false) {
+          Serial.println("left");
           inchRIGHT(); //makes slight turn instead of stopping and turning if moving
           
-        }
+        
+      }
+      else if (bearing > 178 && ballCaught == false) {
+          Serial.println("right");
+          inchLEFT(); //makes slight turn instead of stopping and turning if moving
+          
+        
       }
       
       //If centred move forward
-      else if (bearing >= 148 && bearing <= 168 && ballCaught == false) {
+      else if (bearing >= 138 && bearing <= 178 && ballCaught == false) {
+        Serial.println("centre");
         wheelsDEFAULT(); //move toward ball
         moving = true; //tell system it is currently moving
 
@@ -458,27 +453,31 @@ void loop() {
       int distance = ballDistance(); //check distance of ball
       
       //If ball is close enough
-      if (distance < 20) {
+      if (distance > 240) {
+        
+        
         ballCaught = true; //tell system that ball is caught
         int bearingGoal = goalbearing(); //begin checking for location of goal
 
         //If ball is centred activate piston
         if (bearingGoal >= 148 && bearingGoal <= 168) { //**EXACT PARAMETER NEEDS TO BE TUNED**
-          pistonActivate();
-          ballCaught = false;
-          delay(1000);
-              
+          if (ticksSinceFired > 50) {
+            pistonActivate();
+            ticksSinceFired == 0;
+            ballCaught = false;
+          }
         }
             
           //If ball is not centred run centring routine
-        else if (bearingGoal > 168) {
-          turnCW();
-              
-          }
-        else if (bearingGoal < 148) {
+        else if (bearingGoal > 178) {
           turnACW();
               
-        }        
+          }
+        else if (bearingGoal < 138) {
+          turnCW();
+              
+              
+        }
       }
     }
   }
