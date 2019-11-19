@@ -467,7 +467,7 @@ void loop() {
           wheelsREVERSE();
           delay(40);
           wheelsOFF();
-          delay(3000);
+          delay(500);
           wheelsREVERSE();
           delay(1200);
           wheelsOFF();
