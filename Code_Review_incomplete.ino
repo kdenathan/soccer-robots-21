@@ -267,6 +267,22 @@ void wheelsDEFAULT() {
   
 }
 
+
+//Move forward slowly
+//=============================================================
+void wheelsSlow() {
+  analogWrite(enA, 60);
+  analogWrite(enB, 60);
+  digitalWrite(in1, HIGH);
+  digitalWrite(in2, LOW);
+  digitalWrite(in3, LOW);
+  digitalWrite(in4, HIGH);
+
+}
+
+
+
+
 //Full power forward
 //=============================================================
 void wheelsPOWER() {
@@ -280,6 +296,7 @@ void wheelsPOWER() {
   digitalWrite(in4, HIGH);
   
 }
+
 
 //Full power reverse
 //=============================================================
@@ -295,6 +312,7 @@ void wheelsREVERSE() {
   
 }
 
+
 //Inch left
 //=============================================================
 void inchRIGHT() {
@@ -308,6 +326,7 @@ void inchRIGHT() {
   digitalWrite(in4, HIGH);
   
 }
+
 
 //Inch right
 //=============================================================
@@ -454,7 +473,7 @@ void loop() {
       
       //If ball is close enough
       if (distance > 240) {
-        
+        wheelsOFF();
         
         ballCaught = true; //tell system that ball is caught
         int bearingGoal = goalbearing(); //begin checking for location of goal
