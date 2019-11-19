@@ -224,8 +224,8 @@ void spinAroundCW() {
 //=============================================================
 void spinAroundACW() {
   //Set slower speed for both motors so ball isn't blurry
-  analogWrite(enA, 50);
-  analogWrite(enB, 50);
+  analogWrite(enA, 55);
+  analogWrite(enB, 55);
   
   //Set forward for motor A
   digitalWrite(in1, HIGH);
@@ -267,12 +267,24 @@ void wheelsDEFAULT() {
   
 }
 
+//Spin around on one wheel
+void spinOneWheel() {
+  //Ensure power states are equal in both wheels
+  analogWrite(enA, 0);
+  analogWrite(enB, 55);
+  //Reverse power in right wheel
+  digitalWrite(in3, LOW);
+  digitalWrite(in4, HIGH);
+  //Forward power in left wheel
+  digitalWrite(in1, LOW);
+  digitalWrite(in2, HIGH);
+}
 
 //Move forward slowly
 //=============================================================
 void wheelsSlow() {
-  analogWrite(enA, 60);
-  analogWrite(enB, 60);
+  analogWrite(enA, 40);
+  analogWrite(enB, 40);
   digitalWrite(in1, HIGH);
   digitalWrite(in2, LOW);
   digitalWrite(in3, LOW);
@@ -280,15 +292,36 @@ void wheelsSlow() {
 
 }
 
+//Turn right slowly
+void turnSlowR() {
+  //Reduce power in right wheel
+  analogWrite(enA, 40);
+  analogWrite(enB, 40);
+  //Make sure both wheels are forward
+  digitalWrite(in1, HIGH);
+  digitalWrite(in2, LOW);
+  digitalWrite(in3, LOW);
+  digitalWrite(in4, HIGH);  
+  
+}
 
-
+void turnSlowL() {
+    //Reduce power in right wheel
+  analogWrite(enA, 40);
+  analogWrite(enB, 40);
+  //Make sure both wheels are forward
+  digitalWrite(in1, LOW);
+  digitalWrite(in2, HIGH);
+  digitalWrite(in3, HIGH);
+  digitalWrite(in4, LOW);  
+}
 
 //Full power forward
 //=============================================================
 void wheelsPOWER() {
   //Set motor speeds to maximum speed
-  analogWrite(enA, 200);
-  analogWrite(enB, 175);
+  analogWrite(enA, 250);
+  analogWrite(enB, 225);
   //Set both wheels to forward
   digitalWrite(in1, HIGH);
   digitalWrite(in2, LOW);
@@ -346,8 +379,8 @@ void inchLEFT() {
 //=============================================================
 void turnCW() {
   //Ensure power states are equal in both wheels
-  analogWrite(enA, 55);
-  analogWrite(enB, 55);
+  analogWrite(enA, 60);
+  analogWrite(enB, 60);
   //Reverse power in right wheel
   digitalWrite(in3, LOW);
   digitalWrite(in4, HIGH);
@@ -361,15 +394,28 @@ void turnCW() {
 //=============================================================
 void turnACW() {
   //Ensure power states are equal in both wheels
-  analogWrite(enA, 55);
-  analogWrite(enB, 55);
+  analogWrite(enA, 60);
+  analogWrite(enB, 60);
   //Reverse power in left wheel
   digitalWrite(in1, HIGH);
   digitalWrite(in2, LOW);
   //Forward power in right wheel
-  digitalWrite(in3, LOW);
-  digitalWrite(in4, HIGH);
+  digitalWrite(in3, HIGH);
+  digitalWrite(in4, LOW);
   
+}
+
+//Wheel correction
+//=============================================================
+void wheelsCORRECT() {
+  analogWrite(enA, 70);
+  analogWrite(enB, 30);
+
+
+  digitalWrite(in1, HIGH);
+  digitalWrite(in2, LOW);
+  digitalWrite(in3, LOW);
+  digitalWrite(in4, HIGH);  
 }
 
 
@@ -384,38 +430,40 @@ void loop() {
   int currentMode = digitalRead(defoff);
   
   //Defence mode
-  if (currentMode = LOW){
-    
+  if (currentMode == 0){
+  
     //Check if ball is found
-    ballFound();
     if (ballFound() == false) { //if ball is not found
       //Run find ball routine
-      spinAroundCW;
+      wheelsOFF();
       
     }
-    else { //if ball is found
-      
+    else if (ballFound() == true) { //if ball is found
+
       //Find out where the ball is
       int bearing = ballBearing();
       
       //Keep ball in centre of camera
       if (bearing < 148) {
-        turnACW();
+        turnCW();
         
       }
       else if (bearing > 168) {
-        turnCW();
+        turnACW();
         
       }
       //If centred wait until ball is within 300mm
       else if (bearing >= 148 && bearing <= 168) {
+        wheelsOFF();
         int distance = ballDistance();
-        if (distance <= 79) { //**NEEDS TO BE TUNED TO 300mm
+        Serial.println(distance);
+        if (distance >= 40) { //**NEEDS TO BE TUNED TO 300mm
           
           //Charge at the ball when in range aand return to goal using calibrated algorithm
           wheelsDEFAULT();
           delay(70);
           wheelsPOWER();
+          delay(600);
           wheelsREVERSE();
           delay(40);
           wheelsOFF();
@@ -423,20 +471,18 @@ void loop() {
           wheelsREVERSE();
           delay(1200);
           wheelsOFF();
-          delay(2000);
           
           //Wait 1 second and then resume ball search
-          delay(1000);
           
         } 
       } 
     }
   }
   //Offence mode
-  else if (currentMode = HIGH) {
+  else if (currentMode == 1) {
      
     //Check if ball has been detected
-    ballFound();
+    
     if (ballFound() == false) { //if ball is not found
       //Run found ball routine
       spinAroundCW();
@@ -472,31 +518,40 @@ void loop() {
       int distance = ballDistance(); //check distance of ball
       
       //If ball is close enough
-      if (distance > 240) {
-        wheelsOFF();
+      if (distance > 250) {
+        wheelsSlow();
+        Serial.println("caught");
         
         ballCaught = true; //tell system that ball is caught
         int bearingGoal = goalbearing(); //begin checking for location of goal
 
         //If ball is centred activate piston
-        if (bearingGoal >= 148 && bearingGoal <= 168) { //**EXACT PARAMETER NEEDS TO BE TUNED**
+        if (bearingGoal >= 140 && bearingGoal <= 176) { //**EXACT PARAMETER NEEDS TO BE TUNED**
+          Serial.println("goalfound");
+          Serial.println(bearingGoal);
           if (ticksSinceFired > 50) {
+            Serial.println("fire");
             pistonActivate();
-            ticksSinceFired == 0;
             ballCaught = false;
           }
         }
             
           //If ball is not centred run centring routine
         else if (bearingGoal > 178) {
-          turnACW();
+          turnSlowL();
               
           }
         else if (bearingGoal < 138) {
-          turnCW();
-              
-              
+          turnSlowR();
+             
         }
+        else {
+          turnSlowR();
+        }
+      }
+      else {
+        ballCaught = false;
+      
       }
     }
   }
