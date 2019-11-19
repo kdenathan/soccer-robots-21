@@ -468,7 +468,7 @@ void loop() {
         wheelsDEFAULT(); //move toward ball
         moving = true; //tell system it is currently moving
 
-            }
+      }
       int distance = ballDistance(); //check distance of ball
       
       //If ball is close enough
