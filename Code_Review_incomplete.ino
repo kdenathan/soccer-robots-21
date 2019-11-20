@@ -16,15 +16,15 @@ int in3 = 8;
 int in4 = 9;
 
 //Piston
-int pistonCharge = 3;
-int pistonFire = 2;
+int pistonCharge = 13;
+int pistonFire = 12;
 
 //Pixy
 #include <Pixy2.h> //Pixy2 Arduino Library
 Pixy2 pixy;
 
 //Defence/Offence switch
-int defoff = 4;
+int defoff = 11;
 
 //Pixy Signatures
 int ballSig = 1; //signature number of the ball
@@ -43,8 +43,8 @@ void setup() {
   //Print pin locations into serial monitor
   Serial.println("Motor controller | 6-10");
   Serial.println("Compass          | A4,A5");
-  Serial.println("Piston           | 2,3");
-  Serial.println("Defense/Offence  | 4");
+  Serial.println("Piston           | 12,13");
+  Serial.println("Defense/Offence  | 11");
 
   //Initialise pin settings
   //motor strength
@@ -307,8 +307,8 @@ void wheelsSlow() {
 //Turn right slowly
 void turnSlowR() {
   //Reduce power in right wheel
-  analogWrite(enA, 40);
-  analogWrite(enB, 40);
+  analogWrite(enA, 50);
+  analogWrite(enB, 60);
   //Make sure both wheels are forward
   digitalWrite(in1, HIGH);
   digitalWrite(in2, LOW);
@@ -319,8 +319,8 @@ void turnSlowR() {
 
 void turnSlowL() {
     //Reduce power in right wheel
-  analogWrite(enA, 40);
-  analogWrite(enB, 40);
+  analogWrite(enA, 60);
+  analogWrite(enB, 50);
   //Make sure both wheels are forward
   digitalWrite(in1, LOW);
   digitalWrite(in2, HIGH);
@@ -437,6 +437,10 @@ void loop() {
   //Begin charging capacitor
   ticksSinceFired++; //start counting how long its been since firing
   digitalWrite(pistonCharge, HIGH);
+  if (ticksSinceFired > 7500) {
+    digitalWrite(pistonCharge, LOW);
+    
+  }
   
   //Check if switch is set to defence or offence  
   int currentMode = digitalRead(defoff);
