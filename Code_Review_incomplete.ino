@@ -267,6 +267,18 @@ void wheelsDEFAULT() {
   
 }
 
+void wheelsFORWARD() {
+  //Set motor speeds to medium speed
+  analogWrite(enA, 85);
+  analogWrite(enB, 70);
+  
+  //Set both wheels to forward
+  digitalWrite(in1, HIGH);
+  digitalWrite(in2, LOW);
+  digitalWrite(in3, LOW);
+  digitalWrite(in4, HIGH);
+}
+
 //Spin around on one wheel
 void spinOneWheel() {
   //Ensure power states are equal in both wheels
@@ -351,7 +363,7 @@ void wheelsREVERSE() {
 void inchRIGHT() {
   //Reduce power in left wheel
   analogWrite(enA, 50);
-  analogWrite(enB, 100);
+  analogWrite(enB, 85);
   //Make sure both wheels are forward
   digitalWrite(in1, HIGH);
   digitalWrite(in2, LOW);
@@ -365,7 +377,7 @@ void inchRIGHT() {
 //=============================================================
 void inchLEFT() {
   //Reduce power in right wheel
-  analogWrite(enA, 100);
+  analogWrite(enA, 85);
   analogWrite(enB, 50);
   //Make sure both wheels are forward
   digitalWrite(in1, HIGH);
@@ -511,22 +523,22 @@ void loop() {
       //If centred move forward
       else if (bearing >= 138 && bearing <= 178 && ballCaught == false) {
         Serial.println("centre");
-        wheelsDEFAULT(); //move toward ball
+        wheelsFORWARD(); //move toward ball
         moving = true; //tell system it is currently moving
 
       }
       int distance = ballDistance(); //check distance of ball
       
       //If ball is close enough
-      if (distance > 250) {
-        wheelsSlow();
+      if (distance > 245) {
+        wheelsOFF();
         Serial.println("caught");
         
         ballCaught = true; //tell system that ball is caught
         int bearingGoal = goalbearing(); //begin checking for location of goal
 
         //If ball is centred activate piston
-        if (bearingGoal >= 140 && bearingGoal <= 176) { //**EXACT PARAMETER NEEDS TO BE TUNED**
+        if (bearingGoal >= 135 && bearingGoal <= 181) { //**EXACT PARAMETER NEEDS TO BE TUNED**
           Serial.println("goalfound");
           Serial.println(bearingGoal);
           if (ticksSinceFired > 50) {
@@ -537,11 +549,11 @@ void loop() {
         }
             
           //If ball is not centred run centring routine
-        else if (bearingGoal > 178) {
+        else if (bearingGoal > 181) {
           turnSlowL();
               
           }
-        else if (bearingGoal < 138) {
+        else if (bearingGoal < 135) {
           turnSlowR();
              
         }
